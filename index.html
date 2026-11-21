@@ -1080,8 +1080,8 @@
       let idleTime = 0;
 
       // Fair Obstacle Spawning Memory
-      let lastClusterPeak = 175;
-      let lastPagodaHeight = 175;
+      let lastClusterPeak = 235;
+      let lastPagodaHeight = 235;
       let lastCaveGapCenter = BASE_GROUND_Y * 0.48;
       let nextSpawnGap = 155;
 
@@ -1242,12 +1242,19 @@
       // -----------------------------------------------------------------------
       // Rare Beetle Spawner (Score > 30, 10–25 Points Apart, Low to Foreground Snow)
       // -----------------------------------------------------------------------
-      function maybeSpawnRareBeetle(corridorCenterX) {
+      function maybeSpawnRareBeetle(corridorCenterX, idealY) {
         if (score <= 30 || score < nextBeetleSpawnScore) return;
         const isRoyal = Math.random() < 0.38;
+        const groundHere = getGroundY(worldScrollX + corridorCenterX);
+        const targetY = clamp(
+          typeof idealY === 'number' ? idealY : (groundHere - 145),
+          96,
+          groundHere - 72
+        );
         collectibles.push({
           type: isRoyal ? 'VIOLET_BLUE' : 'GOLDEN',
           x: corridorCenterX,
+          y: targetY,
           bobPhase: Math.random() * Math.PI * 2,
           legPhase: 0,
           collected: false
@@ -1264,26 +1271,28 @@
           ? 2
           : (2 + Math.floor(Math.random() * 3));
 
-        const minPeak = 118;
-        const maxPeak = 285;
-        const lowP = Math.max(minPeak, lastClusterPeak - 115);
-        const highP = Math.min(maxPeak, lastClusterPeak + 115);
+        const minPeak = 178;
+        const maxPeak = 358;
+        const lowP = Math.max(minPeak, lastClusterPeak - 125);
+        const highP = Math.min(maxPeak, lastClusterPeak + 125);
         const peakHeight = lowP + Math.random() * (highP - lowP);
         lastClusterPeak = peakHeight;
 
         const trees = [];
         let cursorX = 0;
         let maxRight = 0;
+        let tallestH = 0;
 
         for (let i = 0; i < count; i++) {
           const isTallest = (i === Math.floor(count / 2));
           const hFactor = isTallest
-            ? (0.94 + Math.random() * 0.08)
-            : (0.58 + Math.random() * 0.34);
-          const height = clamp(peakHeight * hFactor, 86, 295);
-          const width = clamp(height * (0.30 + Math.random() * 0.11), 46, 94);
-          const trunkH = clamp(height * 0.13, 14, 28);
-          const tiers = 3 + Math.floor(Math.random() * 3);
+            ? (0.95 + Math.random() * 0.07)
+            : (0.66 + Math.random() * 0.28);
+          const height = clamp(peakHeight * hFactor, 136, 366);
+          tallestH = Math.max(tallestH, height);
+          const width = clamp(height * (0.28 + Math.random() * 0.09), 52, 102);
+          const trunkH = clamp(height * 0.13, 16, 32);
+          const tiers = 4 + Math.floor(Math.random() * 3);
 
           trees.push({
             relX: cursorX,
@@ -1306,8 +1315,11 @@
           passed: false
         });
 
-        nextSpawnGap = 116 + Math.random() * 64;
-        maybeSpawnRareBeetle(startX + maxRight + nextSpawnGap * 0.5);
+        nextSpawnGap = 122 + Math.random() * 64;
+        const beetleX = startX + maxRight + nextSpawnGap * 0.5;
+        const groundAtBeetle = getGroundY(worldScrollX + beetleX);
+        const idealArcY = clamp(groundAtBeetle - tallestH + 14, 96, groundAtBeetle - 96);
+        maybeSpawnRareBeetle(beetleX, idealArcY);
         biomeObstaclesSpawned++;
       }
 
@@ -1344,20 +1356,20 @@
         });
 
         nextSpawnGap = 135 + Math.random() * 58;
-        maybeSpawnRareBeetle(startX + w + nextSpawnGap * 0.5);
+        maybeSpawnRareBeetle(startX + w + nextSpawnGap * 0.5, gapCenter);
         biomeObstaclesSpawned++;
       }
 
       function spawnPagodaTower(startX) {
-        const minH = 128;
-        const maxH = 282;
-        const lowH = Math.max(minH, lastPagodaHeight - 115);
-        const highH = Math.min(maxH, lastPagodaHeight + 115);
+        const minH = 188;
+        const maxH = 356;
+        const lowH = Math.max(minH, lastPagodaHeight - 125);
+        const highH = Math.min(maxH, lastPagodaHeight + 125);
         const height = lowH + Math.random() * (highH - lowH);
         lastPagodaHeight = height;
 
-        const tiers = height > 235 ? 5 : (height > 175 ? 4 : 3);
-        const baseWidth = clamp(54 + tiers * 6 + Math.random() * 8, 66, 92);
+        const tiers = height > 295 ? 6 : (height > 235 ? 5 : 4);
+        const baseWidth = clamp(56 + tiers * 5 + Math.random() * 8, 68, 94);
 
         obstacles.push({
           kind: 'PAGODA_TOWER',
@@ -1369,8 +1381,11 @@
           passed: false
         });
 
-        nextSpawnGap = 124 + Math.random() * 62;
-        maybeSpawnRareBeetle(startX + baseWidth + nextSpawnGap * 0.5);
+        nextSpawnGap = 128 + Math.random() * 62;
+        const beetleX = startX + baseWidth + nextSpawnGap * 0.5;
+        const groundAtBeetle = getGroundY(worldScrollX + beetleX);
+        const idealArcY = clamp(groundAtBeetle - height + 16, 96, groundAtBeetle - 96);
+        maybeSpawnRareBeetle(beetleX, idealArcY);
         biomeObstaclesSpawned++;
       }
 
@@ -1574,8 +1589,8 @@
         flashAlpha = 0;
         shakeTime = 0;
         idleTime = 0;
-        lastClusterPeak = 170;
-        lastPagodaHeight = 170;
+        lastClusterPeak = 235;
+        lastPagodaHeight = 235;
         lastCaveGapCenter = BASE_GROUND_Y * 0.48;
         nextSpawnGap = 155;
 
@@ -1896,7 +1911,7 @@
           b.bobPhase += 0.14 * dt;
           b.legPhase += 0.35 * dt;
 
-          const by = getGroundY(worldScrollX + b.x) - 18 + Math.sin(b.bobPhase) * 2.5;
+          const by = (typeof b.y === 'number' ? b.y : getGroundY(worldScrollX + b.x) - 135) + Math.sin(b.bobPhase) * 3.5;
           const dx = bird.x - b.x;
           const dy = bird.y - by;
           const pickupR = bird.radius + 13;
@@ -3249,7 +3264,7 @@
       function drawCollectibles() {
         for (let i = 0; i < collectibles.length; i++) {
           const b = collectibles[i];
-          const by = getGroundY(worldScrollX + b.x) - 18 + Math.sin(b.bobPhase) * 2.5;
+          const by = (typeof b.y === 'number' ? b.y : getGroundY(worldScrollX + b.x) - 135) + Math.sin(b.bobPhase) * 3.5;
           renderBeetleSprite(ctx, b.x, by, 1.05, b.type === 'VIOLET_BLUE', b.legPhase);
         }
       }
