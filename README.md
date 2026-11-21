@@ -9,6 +9,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-69B882?style=for-the-badge)
 
 **Arctic Flight 2** expands the 16-bit retro atmospheric arcade game built in a **single, zero-dependency HTML5 file** (`index.html`). Guide a nimble **Shima Enaga** (Hokkaido's native "snow fairy" bird) across towering winter pine forests, through extended glacial caverns with falling icicle hazards, and into an **Old Hokkaido Pagoda Village**—complete with biome-specific rare beetle power-ups, dynamic day/night Aurora Borealis cycles, and 100% procedural HTML5 Canvas & Web Audio.
+This is an update on :[Artic_Flight](https://github.com/Ajil07/arctic-flight/blob/main/README.md)
 
 ---
 
