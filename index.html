@@ -673,11 +673,11 @@
 
               <!-- Rare Beetle Power-Ups Collected Display -->
               <div class="beetle-loot-row" aria-label="Rare Beetles Collected">
-                <div id="goldBeetleSlot" class="beetle-slot" title="Golden Beetle: 2x Speed for 5 Turns (30+ pts)">
+                <div id="goldBeetleSlot" class="beetle-slot" title="Golden Beetle: 2x Speed for 5 Turns (Pagoda Peaks, 30+ pts)">
                   <canvas id="goldBeetleIcon" class="beetle-icon-canvas" width="24" height="24"></canvas>
                   <span id="goldBeetleCount">GOLD ×0</span>
                 </div>
-                <div id="violetBeetleSlot" class="beetle-slot" title="Purple-Blue Beetle: Permanent 1.5x Speed (30+ pts)">
+                <div id="violetBeetleSlot" class="beetle-slot" title="Royal Beetle: Permanent 1.5x Speed (Cave Icicle Gaps, 30+ pts)">
                   <canvas id="violetBeetleIcon" class="beetle-icon-canvas" width="24" height="24"></canvas>
                   <span id="violetBeetleCount">ROYAL ×0</span>
                 </div>
@@ -730,15 +730,14 @@
      *  1. OUTDOOR (Snowy Forest): 4-layer parallax pines, Mount peaks, Aurora,
      *     Chrome Dino-style 2–4 pine clusters, and 20+ pt Blizzard event.
      *  2. CAVE (Glacial Cavern): Extended cavern duration, stratified ice walls,
-     *     multi-depth crystals, glowworms, and Cave-Exclusive Falling Icicles
-     *     event (2–3 ceiling icicles detaching and plummeting to prevent camping).
+     *     multi-depth crystals, glowworms, lethal Cave-Exclusive Falling Icicles
+     *     event (2–3 ceiling icicles detaching and plummeting), and rare Royal
+     *     Purple-Blue Beetles suspended between the icicle gaps!
      *  3. VILLAGE (Old Hokkaido Village): Homage to the Shima Enaga's native
      *     Hokkaido—Mount Yotei ("Ezo Fuji") backdrop, Hokkaido Shrine roofs,
      *     Akarenga red-brick dome hall, wooden machiya houses, scattered pines,
-     *     2.5D snow-laden Torii Gate transition, and tiered Pagoda Tower pillars!
-     *  4. RARE BEETLE POWER-UPS (Score > 30, spaced 10–25 pts apart, low to snow):
-     *     - Golden Beetle: Doubles speed (2.0x) for the next 5 turns (obstacles).
-     *     - Purple & Blue Beetle: Permanently boosts speed by 1.5x for the run.
+     *     2.5D snow-laden Torii Gate transition, tiered Pagoda Tower pillars,
+     *     and rare Golden Beetles perched atop the pagoda spires!
      */
     (function () {
       'use strict';
@@ -1059,7 +1058,7 @@
         windPhase: 0
       };
 
-      // Cave-Exclusive Falling Icicles Event (2–3 ceiling icicles plummeting)
+      // Cave-Exclusive Falling Icicles Event (2–3 lethal ceiling icicles plummeting)
       const icicleEvent = {
         active: false,
         remainingSec: 0,
@@ -1067,7 +1066,9 @@
         waveTimerSec: 0
       };
 
-      // Rare Beetle Power-Ups State (Score > 30, 10–25 pts apart)
+      // Rare Beetle Power-Ups State (Score > 30, 10–25 pts apart, biome-exclusive)
+      // - Royal Purple-Blue Beetle: Caves only, right between the icicle pairs
+      // - Golden Beetle: Hokkaido Village only, perched on top of the pagodas
       let goldenBoostTurnsLeft = 0; // 2.0x speed for next 5 turns (obstacles passed)
       let permSpeedBoost = 1.0;     // Permanent 1.5x speed multiplier from Royal Purple-Blue Beetle
       let nextBeetleSpawnScore = 35;
@@ -1097,8 +1098,8 @@
 
       // Procedural World Collections
       let obstacles = [];
-      let collectibles = [];      // Rare foreground beetles
-      let fallingIcicles = [];    // Cave-exclusive falling ceiling icicles
+      let collectibles = [];      // Biome-specific rare beetles
+      let fallingIcicles = [];    // Cave-exclusive lethal falling ceiling icicles
       let snowParticles = [];
       let caveSparkles = [];
       let stars = [];
@@ -1240,21 +1241,16 @@
       }
 
       // -----------------------------------------------------------------------
-      // Rare Beetle Spawner (Score > 30, 10–25 Points Apart, Low to Foreground Snow)
+      // Biome-Specific Rare Beetle Spawner (Score > 30, 10–25 Points Apart)
+      //  - 'VIOLET_BLUE' (Royal): Caves only, centered between the icicle gap
+      //  - 'GOLDEN': Hokkaido Village only, perched atop the Pagoda spire
       // -----------------------------------------------------------------------
-      function maybeSpawnRareBeetle(corridorCenterX, idealY) {
+      function maybeSpawnBiomeBeetle(type, xPos, yPos) {
         if (score <= 30 || score < nextBeetleSpawnScore) return;
-        const isRoyal = Math.random() < 0.38;
-        const groundHere = getGroundY(worldScrollX + corridorCenterX);
-        const targetY = clamp(
-          typeof idealY === 'number' ? idealY : (groundHere - 145),
-          96,
-          groundHere - 72
-        );
         collectibles.push({
-          type: isRoyal ? 'VIOLET_BLUE' : 'GOLDEN',
-          x: corridorCenterX,
-          y: targetY,
+          type,
+          x: xPos,
+          y: clamp(yPos, 44, BASE_GROUND_Y - 40),
           bobPhase: Math.random() * Math.PI * 2,
           legPhase: 0,
           collected: false
@@ -1281,7 +1277,6 @@
         const trees = [];
         let cursorX = 0;
         let maxRight = 0;
-        let tallestH = 0;
 
         for (let i = 0; i < count; i++) {
           const isTallest = (i === Math.floor(count / 2));
@@ -1289,7 +1284,6 @@
             ? (0.95 + Math.random() * 0.07)
             : (0.66 + Math.random() * 0.28);
           const height = clamp(peakHeight * hFactor, 136, 366);
-          tallestH = Math.max(tallestH, height);
           const width = clamp(height * (0.28 + Math.random() * 0.09), 52, 102);
           const trunkH = clamp(height * 0.13, 16, 32);
           const tiers = 4 + Math.floor(Math.random() * 3);
@@ -1316,10 +1310,6 @@
         });
 
         nextSpawnGap = 122 + Math.random() * 64;
-        const beetleX = startX + maxRight + nextSpawnGap * 0.5;
-        const groundAtBeetle = getGroundY(worldScrollX + beetleX);
-        const idealArcY = clamp(groundAtBeetle - tallestH + 14, 96, groundAtBeetle - 96);
-        maybeSpawnRareBeetle(beetleX, idealArcY);
         biomeObstaclesSpawned++;
       }
 
@@ -1355,8 +1345,10 @@
           passed: false
         });
 
+        // Royal Purple-Blue Beetle spawns directly in between the upper & lower icicles
+        maybeSpawnBiomeBeetle('VIOLET_BLUE', startX + w * 0.5, gapCenter);
+
         nextSpawnGap = 135 + Math.random() * 58;
-        maybeSpawnRareBeetle(startX + w + nextSpawnGap * 0.5, gapCenter);
         biomeObstaclesSpawned++;
       }
 
@@ -1381,11 +1373,13 @@
           passed: false
         });
 
+        // Golden Beetle spawns perched right on top of the Hokkaido Pagoda spire
+        const pagodaCx = startX + baseWidth * 0.5;
+        const groundAtPagoda = getGroundY(worldScrollX + pagodaCx);
+        const pagodaPeakY = groundAtPagoda - height - 15;
+        maybeSpawnBiomeBeetle('GOLDEN', pagodaCx, pagodaPeakY);
+
         nextSpawnGap = 128 + Math.random() * 62;
-        const beetleX = startX + baseWidth + nextSpawnGap * 0.5;
-        const groundAtBeetle = getGroundY(worldScrollX + beetleX);
-        const idealArcY = clamp(groundAtBeetle - height + 16, 96, groundAtBeetle - 96);
-        maybeSpawnRareBeetle(beetleX, idealArcY);
         biomeObstaclesSpawned++;
       }
 
@@ -1469,6 +1463,7 @@
 
         const hitR = bird.radius - 2.4;
 
+        // 1. Cave-Exclusive Falling Icicles (Lethal Hazard)
         for (let i = 0; i < fallingIcicles.length; i++) {
           const ic = fallingIcicles[i];
           if (circleIntersectsTriangle(
@@ -1481,6 +1476,7 @@
           }
         }
 
+        // 2. Biome Obstacles
         for (let i = 0; i < obstacles.length; i++) {
           const ob = obstacles[i];
 
@@ -1905,13 +1901,14 @@
           }
         }
 
+        // Move Biome-Exclusive Beetles & Check Pickup
         for (let i = collectibles.length - 1; i >= 0; i--) {
           const b = collectibles[i];
           b.x -= currentScrollSpeed * dt;
           b.bobPhase += 0.14 * dt;
           b.legPhase += 0.35 * dt;
 
-          const by = (typeof b.y === 'number' ? b.y : getGroundY(worldScrollX + b.x) - 135) + Math.sin(b.bobPhase) * 3.5;
+          const by = b.y + Math.sin(b.bobPhase) * 3.0;
           const dx = bird.x - b.x;
           const dy = bird.y - by;
           const pickupR = bird.radius + 13;
@@ -3264,7 +3261,7 @@
       function drawCollectibles() {
         for (let i = 0; i < collectibles.length; i++) {
           const b = collectibles[i];
-          const by = (typeof b.y === 'number' ? b.y : getGroundY(worldScrollX + b.x) - 135) + Math.sin(b.bobPhase) * 3.5;
+          const by = b.y + Math.sin(b.bobPhase) * 3.0;
           renderBeetleSprite(ctx, b.x, by, 1.05, b.type === 'VIOLET_BLUE', b.legPhase);
         }
       }
