@@ -1,6 +1,6 @@
 # ❄️ Arctic Flight 2
 
-> **🎮 Play:** **[Arctic_Flight](https://ajil07.github.io/arctic-flight/)**
+> **🎮 Play:** **[Arctic_Flight 2](https://ajil07.github.io/arctic-flight-2/)**
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![Canvas API](https://img.shields.io/badge/Canvas_2D-16--Bit_Procedural-38BDF8?style=for-the-badge)
