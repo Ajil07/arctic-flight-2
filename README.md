@@ -32,7 +32,15 @@ Paying homage to the Shima Enaga's native home in Hokkaido, Japan, exiting the g
 ### 🪲 Biome-Exclusive Rare Beetle Power-Ups (30+ Points)
 Once your score climbs past **30 points**, rare metallic beetles begin appearing **10 to 25 points apart** in specific high-reward locations:
 * **Golden Beetle (Hokkaido Village Only):** Perched atop the spire peaks of tall pagodas. Collecting one **doubles your horizontal speed (`2.0x`) for the next 5 turns** (5 obstacles cleared) and surrounds the bird in a golden aura.
+
+<img width="256" height="256" alt="Code_Generated_Image (1)" src="https://github.com/user-attachments/assets/00a48cca-78e4-44d0-ae5a-f254a3d9664a" />
+
+
 * **Royal Purple-Blue Beetle (Glacial Cave Only):** Suspended directly in the narrow gap between upper stalactites and lower stalagmites. Collecting one **permanently increases your run speed by `1.5x`** with an iridescent violet-blue aura.
+
+<img width="256" height="256" alt="Code_Generated_Image" src="https://github.com/user-attachments/assets/7e2881ba-dde3-4334-815b-e5161446e94d" />
+
+
 * **Game Over Specimen Log:** Tracks and displays your collected `GOLD ×N` and `ROYAL ×N` beetle counts with pixel-rendered icons on the Game Over card.
 
 ### 🧊 Extended Glacial Cave & Falling Icicles Hazard (`CAVE`)
@@ -111,9 +119,9 @@ Because **Arctic Flight 2** has zero dependencies or build steps, running it loc
 
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/ajil07/arctic-flight.git](https://github.com/ajil07/arctic-flight.git)
+git clone [https://github.com/ajil07/arctic-flight.git](https://github.com/ajil07/arctic-flight-2.git)
 
 # 2. Navigate into the project folder
-cd arctic-flight
+cd arctic-flight-2
 
 # 3. Open index.html directly in any modern browser
